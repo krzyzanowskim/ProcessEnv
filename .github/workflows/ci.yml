@@ -13,12 +13,17 @@ on:
     branches:
       - main
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Test
-    runs-on: macOS-14
+    runs-on: macOS-15
+    timeout-minutes: 30
     env:
-      DEVELOPER_DIR: /Applications/Xcode_15.3.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_16.3.app
     steps:
       - uses: actions/checkout@v4
       - name: Test
@@ -27,12 +32,18 @@ jobs:
   linux_test:
     name: Test Linux
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        swift-version:
+          - 6.0.3
+          - 6.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install swiftly
-        run: curl -L https://swift-server.github.io/swiftly/swiftly-install.sh | bash -s -- -y
-      - name: Install the latest Swift toolchain
-        run: swiftly install latest
+      - name: Swiftly
+        uses: vapor/swiftly-action@v0.2.0
+        with:
+          toolchain: ${{ matrix.swift-version }}
       - name: Test
         run: swift test
