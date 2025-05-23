@@ -47,7 +47,7 @@ public extension Process {
             let processInfo = ProcessInfo.processInfo
 
             let shellPath = processInfo.shellExecutablePath
-            let args = ["-ilc", command]
+            let args = ["-lc", command]
             let cwdURL = currentDirectoryURL
 
             let defaultEnv = ["TERM": "xterm-256color",
