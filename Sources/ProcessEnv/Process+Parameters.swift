@@ -47,7 +47,15 @@ public extension Process {
             let processInfo = ProcessInfo.processInfo
 
             let shellPath = processInfo.shellExecutablePath
-            let args = ["-lc", command]
+            let args: [String] =
+                if shellPath.hasSuffix("tcsh") {
+                    // @siracusa exception
+                    // https://mastodon.social/@siracusa/114563350026337479
+                    ["-c", command]
+                } else {
+                    ["-lc", command]
+                }
+
             let cwdURL = currentDirectoryURL
 
             let defaultEnv = ["TERM": "xterm-256color",
